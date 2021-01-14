@@ -37,5 +37,9 @@ class MenuFragment : Fragment() {
         button_leaderboard.setOnClickListener {
             findNavController().navigate(R.id.action_MenuFragment_to_LeaderboardFragment)
         }
+
+        button_newgame.setOnClickListener {
+            findNavController().navigate(R.id.action_MenuFragment_to_GameFragment)
+        }
     }
 }

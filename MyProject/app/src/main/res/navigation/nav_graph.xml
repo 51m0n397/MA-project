@@ -28,6 +28,10 @@
         <action
             android:id="@+id/action_MenuFragment_to_LeaderboardFragment"
             app:destination="@id/LeaderboardFragment" />
+
+        <action
+            android:id="@+id/action_MenuFragment_to_GameFragment"
+            app:destination="@id/GameFragment" />
     </fragment>
     <fragment
         android:id="@+id/LeaderboardFragment"
@@ -37,6 +41,15 @@
 
         <action
             android:id="@+id/action_LeaderboardFragment_to_MenuFragment"
+            app:destination="@id/MenuFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/GameFragment"
+        android:name="it.simone.myproject.GameFragment"
+        android:label="@string/game_fragment_label">
+
+        <action
+            android:id="@+id/action_GameFragment_to_MenuFragment"
             app:destination="@id/MenuFragment" />
     </fragment>
 </navigation>
