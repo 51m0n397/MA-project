@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 
 /**
@@ -25,7 +26,9 @@ class SecondFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         view.findViewById<Button>(R.id.button_second).setOnClickListener {
-            findNavController().navigate(R.id.action_SecondFragment_to_FirstFragment)
+            Conf.token = ""
+            findNavController().popBackStack()
+            findNavController().navigate(R.id.FirstFragment)
         }
     }
 }
