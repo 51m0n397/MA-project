@@ -11,12 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.gms.common.SignInButton
+import kotlinx.android.synthetic.main.fragment_login.*
 
 /**
- * A simple [Fragment] subclass as the default destination in the navigation.
+ * Google login fragment
  */
-class FirstFragment : Fragment() {
+class LoginFragment : Fragment() {
 
     val LOGIN_REQUEST = 1
 
@@ -25,7 +25,7 @@ class FirstFragment : Fragment() {
             savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_first, container, false)
+        return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -38,7 +38,7 @@ class FirstFragment : Fragment() {
 
         val client = Identity.getSignInClient(this.requireActivity())
 
-        view.findViewById<SignInButton>(R.id.sign_in_button).setOnClickListener {
+        sign_in_button.setOnClickListener {
             val intent = client.getSignInIntent(request)
             intent.addOnSuccessListener { request ->
                 startIntentSenderForResult(request.intentSender,
@@ -50,7 +50,7 @@ class FirstFragment : Fragment() {
                         null)
                 Log.i("info", "onCreate: ")
             }
-            intent.addOnFailureListener { _ -> Log.i("info", "onCreate: ")}
+            intent.addOnFailureListener { _ -> Log.i("info", "onFailure: ")}
         }
     }
 
@@ -63,9 +63,12 @@ class FirstFragment : Fragment() {
                     .getSignInCredentialFromIntent(data)
 
             Conf.token = credential.googleIdToken.toString()
+            Conf.name = credential.displayName.toString()
+            Conf.familyName = credential.familyName.toString()
+            Conf.id = credential.id.toString()
 
             findNavController(this).popBackStack()
-            findNavController(this).navigate(R.id.SecondFragment)
+            findNavController(this).navigate(R.id.MenuFragment)
         }
     }
 }

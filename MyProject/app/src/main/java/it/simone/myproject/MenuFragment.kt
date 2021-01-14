@@ -5,30 +5,33 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import kotlinx.android.synthetic.main.fragment_menu.*
 
 /**
- * A simple [Fragment] subclass as the second destination in the navigation.
+ * Main menu fragment
  */
-class SecondFragment : Fragment() {
+class MenuFragment : Fragment() {
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
             savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_second, container, false)
+        return inflater.inflate(R.layout.fragment_menu, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.button_second).setOnClickListener {
+        button_logout.setOnClickListener {
             Conf.token = ""
+            Conf.name = ""
+            Conf.familyName = ""
+            Conf.id = ""
+
             findNavController().popBackStack()
-            findNavController().navigate(R.id.FirstFragment)
+            findNavController().navigate(R.id.LoginFragment)
         }
     }
 }
