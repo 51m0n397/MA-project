@@ -24,5 +24,19 @@
         <action
             android:id="@+id/action_MenuFragment_to_LoginFragment"
             app:destination="@id/LoginFragment" />
+
+        <action
+            android:id="@+id/action_MenuFragment_to_LeaderboardFragment"
+            app:destination="@id/LeaderboardFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/LeaderboardFragment"
+        android:name="it.simone.myproject.LeaderboardFragment"
+        android:label="@string/leaderboard_fragment_label"
+        tools:layout="@layout/fragment_leaderboard">
+
+        <action
+            android:id="@+id/action_LeaderboardFragment_to_MenuFragment"
+            app:destination="@id/MenuFragment" />
     </fragment>
 </navigation>

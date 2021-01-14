@@ -33,5 +33,9 @@ class MenuFragment : Fragment() {
             findNavController().popBackStack()
             findNavController().navigate(R.id.LoginFragment)
         }
+
+        button_leaderboard.setOnClickListener {
+            findNavController().navigate(R.id.action_MenuFragment_to_LeaderboardFragment)
+        }
     }
 }
