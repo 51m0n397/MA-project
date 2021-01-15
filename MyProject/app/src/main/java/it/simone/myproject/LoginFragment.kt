@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
                         null)
                 Log.i("info", "onCreate: ")
             }
-            intent.addOnFailureListener { _ -> Log.i("info", "onFailure: ")}
+            intent.addOnFailureListener { e -> Log.i("info", "onFailure: " + e) }
         }
     }
 
