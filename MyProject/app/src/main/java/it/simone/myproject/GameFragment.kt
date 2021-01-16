@@ -18,4 +18,16 @@ class GameFragment : Fragment() {
 
         return gameView
     }
+
+    override fun onResume() {
+        super.onResume()
+
+        gameView.play()
+    }
+
+    override fun onPause() {
+        super.onPause()
+
+        gameView.pause()
+    }
 }

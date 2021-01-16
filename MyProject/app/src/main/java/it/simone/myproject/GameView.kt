@@ -4,69 +4,64 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
-import java.util.concurrent.Semaphore
+import kotlinx.coroutines.*
 
-class GameView: View {
-
-    constructor(context: Context?) : super(context)
-
-    val TILE_HEIGHT = 0.05f
+class GameView(context: Context?) : View(context) {
 
     private val backgroundPaint = Paint().apply {
-        color = ContextCompat.getColor(context, R.color.purple_700)
+        color = ContextCompat.getColor(context!!, R.color.purple_700)
     }
 
-    private val objectsPaint = Paint().apply {
-        color = Color.WHITE
+
+    private var playing = false
+
+    private var gameLoop: Job? = null
+
+    val tileList = TileList()
+
+    private fun initGame() {
     }
 
-    val tileList = ArrayList<Tile>()
-
-    init {
-        updateTiles()
-        addTiles()
+    private fun update(timePassed: Long) {
+        tileList.update(timePassed)
     }
 
-    override fun onDraw(canvas: Canvas) {
+
+    fun play() {
+        playing = true
+        initGame()
+        gameLoop = GlobalScope.launch {
+            var lastIterationTime = System.currentTimeMillis()
+
+            while (isActive) {
+                val now = System.currentTimeMillis()
+                val timePassed = now - lastIterationTime
+                lastIterationTime = now
+
+                update(timePassed)
+
+                invalidate()
+            }
+        }
+    }
+
+    fun pause() = runBlocking {
+        gameLoop?.cancel()
+        gameLoop?.join()
+        gameLoop = null
+    }
+
+    override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
         canvas?.drawPaint(backgroundPaint)
 
-        for(tile in tileList) {
-            val rects = tile.getRects(width, height)
-            //Log.i("info", rects.toString())
-            canvas.drawRect(rects.first, objectsPaint)
-            canvas.drawRect(rects.second, objectsPaint)
-        }
-
-        invalidate()
+        tileList.draw(width, height, canvas)
     }
-
-    fun addTiles() {
-
-        tileList.add(Tile(0.4f, TILE_HEIGHT,1f))
-
-        Handler(Looper.getMainLooper()).postDelayed({ addTiles() }, 1000)
-    }
-
-
-
-    fun updateTiles() {
-
-        for(tile in tileList) {
-            tile.position = tile.position - 0.005f
-            if (tile.position < - TILE_HEIGHT) tileList.remove(tile)
-        }
-
-        invalidate()
-        Handler(Looper.getMainLooper()).postDelayed({ updateTiles() }, 1000/60)
-    }
-
 
 }
