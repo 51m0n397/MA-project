@@ -8,5 +8,7 @@
     <string name="log_out">Log out</string>
     <string name="new_game">New Game</string>
     <string name="leaderboard">Leaderboard</string>
+    <string name="game_over">Game Over</string>
+    <string name="score">SCORE</string>
 
 </resources>

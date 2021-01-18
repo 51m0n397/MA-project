@@ -6,6 +6,8 @@ import android.graphics.RectF
 class TileList {
     var list = ArrayList<Tile>()
 
+    var tileNum = 0
+
     private val spawnPeriod = 1000L
 
     private var time = 0L
@@ -23,6 +25,7 @@ class TileList {
             time += timePassed
         } else {
             list.add(Tile())
+            tileNum++
             time = 0
         }
     }

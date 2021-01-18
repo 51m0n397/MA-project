@@ -1,33 +1,34 @@
 package it.simone.myproject
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
 import android.hardware.Sensor
 import android.hardware.SensorEvent
-import android.hardware.SensorEventListener2
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.*
 
-class GameView(context: Context?) : View(context), SensorEventListener2 {
-
-    private val backgroundPaint = Paint().apply {
-        color = ContextCompat.getColor(context!!, R.color.purple_700)
-    }
-
+class GameView(context: Context?) : View(context), SensorEventListener, View.OnTouchListener {
 
     private var gameLoop: Job? = null
 
-    val tileList = TileList()
-    val ball = Ball()
-    val scrollSpeed = 0.001f
-    var xAcceleration = 0f
+    private var tileList: TileList? = null
+    private var ball: Ball? = null
+    private var xAcceleration = 0f
+    private var gameOver = false
+
+    private val scrollSpeed = 0.001f
+
+    private fun newGame() {
+        tileList = TileList()
+        ball = Ball()
+        xAcceleration = 0f
+        gameOver = false
+    }
 
     init {
         val sensorManager = context?.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -36,6 +37,8 @@ class GameView(context: Context?) : View(context), SensorEventListener2 {
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL
         )
+        setOnTouchListener(this)
+        newGame()
     }
 
 
@@ -47,36 +50,41 @@ class GameView(context: Context?) : View(context), SensorEventListener2 {
 
 
     private fun update(timePassed: Long) {
-        tileList.update(timePassed, scrollSpeed)
-        ball.update(timePassed, tileList.clone(), scrollSpeed, xAcceleration)
+        tileList?.update(timePassed, scrollSpeed)
+        ball?.update(timePassed, tileList?.clone()!!, scrollSpeed, xAcceleration)
     }
 
 
     fun play() {
-        gameLoop = GlobalScope.launch {
-            var lastIterationTime = System.currentTimeMillis()
+        if (!gameOver) {
+            gameLoop = GlobalScope.launch {
+                var lastIterationTime = System.currentTimeMillis()
 
-            while (isActive) {
-                val now = System.currentTimeMillis()
-                val timePassed = now - lastIterationTime
-                lastIterationTime = now
+                while (isActive) {
+                    val now = System.currentTimeMillis()
+                    val timePassed = now - lastIterationTime
+                    lastIterationTime = now
 
-                update(timePassed)
+                    update(timePassed)
+
+                    if (ball?.gameOver == true) {
+                        gameOver = true
+                        break
+                    }
+                }
             }
         }
     }
 
-    fun pause() = runBlocking {
+    fun pause() {
         gameLoop?.cancel()
-        gameLoop?.join()
-        gameLoop = null
     }
+
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.drawPaint(backgroundPaint)
-
+        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_700))
 
         var textPaint = Paint().apply {
             color = Color.WHITE
@@ -89,7 +97,12 @@ class GameView(context: Context?) : View(context), SensorEventListener2 {
             strokeWidth = 0.01f * height
         }
 
-        canvas?.drawText("SCORE", 0.03f * width, 0.05f * height, textPaint)
+        canvas?.drawText(
+                resources.getString(R.string.score) + ": " + tileList!!.tileNum,
+                0.03f * width,
+                0.05f * height,
+                textPaint
+        )
 
         val offset = 0.07f * height
 
@@ -103,10 +116,10 @@ class GameView(context: Context?) : View(context), SensorEventListener2 {
             // taller
 
             frame.set(
-                border,
-                offset + border,
-                width - border,
-                offset + width/3f*5f - border
+                    border,
+                    offset + border,
+                    width - border,
+                    offset + width / 3f * 5f - border
             )
 
             canvas?.drawRect(frame, framePaint)
@@ -115,28 +128,58 @@ class GameView(context: Context?) : View(context), SensorEventListener2 {
             val w = remainingHeight/5f*3f
 
             frame.set(
-                (width-w)/2 + border,
-                offset + border,
-                (width-w)/2+w - border,
-                height.toFloat() - border,
+                    (width - w) / 2 + border,
+                    offset + border,
+                    (width - w) / 2 + w - border,
+                    height.toFloat() - border,
             )
 
             canvas?.drawRect(frame, framePaint)
         }
 
-        tileList.clone().draw(frame, canvas)
+        tileList?.clone()?.draw(frame, canvas)
+        ball?.draw(frame, canvas)
 
-        ball.draw(frame, canvas)
 
-        invalidate()
+        val r = Rect()
+        val t = resources.getString(R.string.game_over)
+
+        var gameOverPaint = Paint().apply {
+            color = Color.WHITE
+            textSize = (width/t.length).toFloat()
+        }
+
+        gameOverPaint.getTextBounds(t, 0, t.length, r)
+
+        val x: Float = width / 2f - r.width() / 2f - r.left
+        val y: Float = height / 2f + r.height() / 2f - r.bottom
+
+        if (gameOver) {
+            Log.i("info", "gameOver")
+            canvas?.drawARGB(100, 0, 0, 0)
+            canvas?.drawText(t, x, y, gameOverPaint)
+        } else {
+            invalidate()
+        }
 
         //Log.i("info", width.toString() + " " + height.toString())
     }
 
-    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+        when (event?.action) {
+            MotionEvent.ACTION_UP -> {
+                if (gameOver) {
+                    newGame()
+                    invalidate()
+                    play()
+                }
+
+            }
+        }
+        return true
     }
 
-    override fun onFlushCompleted(sensor: Sensor?) {
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
     }
 
 }

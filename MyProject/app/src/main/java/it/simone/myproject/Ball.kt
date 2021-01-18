@@ -11,9 +11,9 @@ class Ball {
 
     private var ySpeed = 0.0f
     private var xSpeed = 0.0f
-    private val yAcceleration = 0.000001f
+    private val yAcceleration = 0.000002f
 
-    private val sigma = 0.000001f
+    var gameOver = false
 
     private val boundingRect = RectF(1.5f-radius, 0f, 1.5f+radius, radius*2)
 
@@ -30,7 +30,7 @@ class Ball {
         val isec = tileList.intersect(boundingRect)
 
         if (isec == "bottom") {
-            ySpeed = 0.0f
+            ySpeed = 0f
             boundingRect.offset(xSpeed * timePassed, -scrollSpeed * timePassed)
         } else if ((isec == "left" && xSpeed < 0) || (isec == "right" && xSpeed > 0)) {
             xSpeed = 0f
@@ -43,6 +43,7 @@ class Ball {
         if (boundingRect.left < 0) boundingRect.offset(-boundingRect.left, 0f)
         if (boundingRect.right > 3) boundingRect.offset(3-boundingRect.right, 0f)
         if (boundingRect.bottom > 5) boundingRect.offset(0f, 5-boundingRect.bottom)
+        if (boundingRect.top < 0) gameOver = true
     }
 
     fun draw(frame: RectF, canvas: Canvas?) {
