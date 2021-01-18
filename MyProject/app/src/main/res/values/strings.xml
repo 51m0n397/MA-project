@@ -10,5 +10,7 @@
     <string name="leaderboard">Leaderboard</string>
     <string name="game_over">Game Over</string>
     <string name="score">SCORE</string>
+    <string name="my_highest_score">My highest score:</string>
+    <string name="leaderboard_title">LEADERBOARD</string>
 
 </resources>

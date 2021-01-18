@@ -1,5 +1,6 @@
 package it.simone.myproject
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.hardware.Sensor
@@ -23,6 +24,8 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
 
     private var scrollSpeed = 0.001f
     private var scrollAcceleration = 0.00000002f
+
+    private val highScoreManager = HighScoreManager(context)
 
     private fun newGame() {
         tileList = TileList()
@@ -57,7 +60,6 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
         ball?.update(timePassed, tileList?.clone()!!, scrollSpeed, xAcceleration)
     }
 
-
     fun play() {
         if (!gameOver) {
             gameLoop = GlobalScope.launch {
@@ -72,6 +74,7 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
 
                     if (ball?.gameOver == true) {
                         gameOver = true
+                        highScoreManager.set(tileList!!.tileNum)
                         break
                     }
                 }
