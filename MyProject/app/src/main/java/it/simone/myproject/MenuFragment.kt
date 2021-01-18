@@ -30,8 +30,10 @@ class MenuFragment : Fragment() {
             Conf.familyName = ""
             Conf.id = ""
 
-            findNavController().popBackStack()
-            findNavController().navigate(R.id.LoginFragment)
+            Conf.googleSignInClient.signOut().addOnCompleteListener {
+                findNavController().popBackStack()
+                findNavController().navigate(R.id.LoginFragment)
+            }
         }
 
         button_leaderboard.setOnClickListener {
