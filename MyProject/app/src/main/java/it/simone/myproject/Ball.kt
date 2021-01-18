@@ -11,7 +11,7 @@ class Ball {
 
     private var ySpeed = 0.0f
     private var xSpeed = 0.0f
-    private val yAcceleration = 0.000002f
+    private val yAcceleration = 0.000005f
 
     var gameOver = false
 
@@ -26,6 +26,7 @@ class Ball {
 
     fun update(timePassed: Long, tileList: TileList, scrollSpeed: Float, xAcceleration: Float) {
         xSpeed += xAcceleration * timePassed/1000000
+        ySpeed += yAcceleration * timePassed
 
         val isec = tileList.intersect(boundingRect)
 
@@ -36,12 +37,17 @@ class Ball {
             xSpeed = 0f
             boundingRect.offset(0f, ySpeed * timePassed)
         } else {
-            ySpeed += yAcceleration * timePassed
             boundingRect.offset(xSpeed * timePassed, ySpeed * timePassed)
         }
 
-        if (boundingRect.left < 0) boundingRect.offset(-boundingRect.left, 0f)
-        if (boundingRect.right > 3) boundingRect.offset(3-boundingRect.right, 0f)
+        if (boundingRect.left < 0) {
+            xSpeed = 0f
+            boundingRect.offset(-boundingRect.left, 0f)
+        }
+        if (boundingRect.right > 3) {
+            xSpeed = 0f
+            boundingRect.offset(3-boundingRect.right, 0f)
+        }
         if (boundingRect.bottom > 5) boundingRect.offset(0f, 5-boundingRect.bottom)
         if (boundingRect.top < 0) gameOver = true
     }

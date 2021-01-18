@@ -21,12 +21,14 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
     private var xAcceleration = 0f
     private var gameOver = false
 
-    private val scrollSpeed = 0.001f
+    private var scrollSpeed = 0.001f
+    private var scrollAcceleration = 0.00000002f
 
     private fun newGame() {
         tileList = TileList()
         ball = Ball()
         xAcceleration = 0f
+        scrollSpeed = 0.001f
         gameOver = false
     }
 
@@ -50,6 +52,7 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
 
 
     private fun update(timePassed: Long) {
+        scrollSpeed += timePassed*scrollAcceleration
         tileList?.update(timePassed, scrollSpeed)
         ball?.update(timePassed, tileList?.clone()!!, scrollSpeed, xAcceleration)
     }
@@ -155,7 +158,6 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
         val y: Float = height / 2f + r.height() / 2f - r.bottom
 
         if (gameOver) {
-            Log.i("info", "gameOver")
             canvas?.drawARGB(100, 0, 0, 0)
             canvas?.drawText(t, x, y, gameOverPaint)
         } else {

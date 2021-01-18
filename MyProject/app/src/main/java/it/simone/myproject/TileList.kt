@@ -8,7 +8,7 @@ class TileList {
 
     var tileNum = 0
 
-    private val spawnPeriod = 1000L
+    private val spawnPeriod = 1L
 
     private var time = 0L
 
@@ -21,7 +21,7 @@ class TileList {
             if (tile.outOfScreen()) iter.remove()
         }
 
-        if (time < spawnPeriod) {
+        if (time < spawnPeriod/scrollSpeed) {
             time += timePassed
         } else {
             list.add(Tile())
