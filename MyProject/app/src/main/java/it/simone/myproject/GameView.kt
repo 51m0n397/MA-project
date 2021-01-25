@@ -11,6 +11,8 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import it.simone.myproject.LoginFragment.Companion.globalstatsId
+import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.coroutines.*
 
 class GameView(context: Context?) : View(context), SensorEventListener, View.OnTouchListener {
@@ -24,8 +26,6 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
 
     private var scrollSpeed = 0.001f
     private var scrollAcceleration = 0.00000002f
-
-    private val highScoreManager = HighScoreManager(context)
 
     private fun newGame() {
         tileList = TileList()
@@ -74,7 +74,7 @@ class GameView(context: Context?) : View(context), SensorEventListener, View.OnT
 
                     if (ball?.gameOver == true) {
                         gameOver = true
-                        highScoreManager.set(tileList!!.tileNum)
+                        GlobalstatsApi().postScore(globalstatsId, tileList!!.tileNum)
                         break
                     }
                 }

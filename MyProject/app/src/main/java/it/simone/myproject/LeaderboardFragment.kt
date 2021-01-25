@@ -6,7 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import it.simone.myproject.LoginFragment.Companion.globalstatsId
+import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.android.synthetic.main.fragment_leaderboard.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class LeaderboardFragment : Fragment() {
 
@@ -21,6 +27,12 @@ class LeaderboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view_my_highest_score.text = getString(R.string.my_highest_score) + " " + HighScoreManager(context).get()
+        GlobalScope.launch {
+            val score = GlobalstatsApi().getUserStatistic(globalstatsId)?.value
+
+            withContext(Dispatchers.Main) {
+                view_my_highest_score.text = getString(R.string.my_highest_score) + " " + score
+            }
+        }
     }
 }

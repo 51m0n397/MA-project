@@ -18,8 +18,16 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.android.synthetic.main.fragment_login.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 
 /**
@@ -31,6 +39,7 @@ class LoginFragment : Fragment() {
         val clientId = "410429140054-121fs1u1a15ijptjap8dfla1lh0gg4vs.apps.googleusercontent.com"
         lateinit var firebaseAuth: FirebaseAuth
         lateinit var googleSignInClient: GoogleSignInClient
+        lateinit var globalstatsId: String
     }
 
     private val RC_SIGN_IN = 9001
@@ -104,11 +113,45 @@ class LoginFragment : Fragment() {
             .addOnCompleteListener(this.requireActivity()) { task ->
                 if (task.isSuccessful) {
                     Log.i("info", "signInWithCredential:success")
-                    navigateToMenu()
+                    getGlobalstatsId(account)
                 } else {
                     Log.i("info", "signInWithCredential:failure", task.exception)
                 }
             }
+    }
+
+    private fun getGlobalstatsId(account: GoogleSignInAccount) {
+        val database = Firebase.database
+        database.getReference("users").child(account.id.toString()).addListenerForSingleValueEvent(object :
+            ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val userId = dataSnapshot.getValue(String::class.java)
+                if (userId != null) {
+                    Log.i("info", "user id: " + userId)
+                    globalstatsId = userId
+                    navigateToMenu()
+                }
+                else {
+                    Log.i("info", "no user id, creating one")
+                    GlobalScope.launch {
+                        val new_id = GlobalstatsApi().registerUser(account.displayName.toString())
+                        if (new_id == null) {
+                            Log.i("info", "Error while retreiving user id")
+                        } else {
+                            val id = new_id.toString()
+                            database.getReference("users").child(account.id.toString()).setValue(id)
+                            Log.i("info", "New id: " + id)
+                            globalstatsId = id
+                            navigateToMenu()
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.i("info", "error: " + error)
+            }
+        })
     }
 
     private fun navigateToMenu() {
