@@ -15,6 +15,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import kotlinx.android.synthetic.main.fragment_login.*
 
 
@@ -23,6 +27,11 @@ import kotlinx.android.synthetic.main.fragment_login.*
  */
 
 class LoginFragment : Fragment() {
+    companion object {
+        val clientId = "410429140054-121fs1u1a15ijptjap8dfla1lh0gg4vs.apps.googleusercontent.com"
+        lateinit var firebaseAuth: FirebaseAuth
+        lateinit var googleSignInClient: GoogleSignInClient
+    }
 
     private val RC_SIGN_IN = 9001
 
@@ -30,7 +39,6 @@ class LoginFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_login, container, false)
     }
 
@@ -38,10 +46,11 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(Conf.clientId)
+            .requestIdToken(clientId)
             .build()
 
-        Conf.googleSignInClient = GoogleSignIn.getClient(this.requireActivity(), gso);
+        googleSignInClient = GoogleSignIn.getClient(this.requireActivity(), gso)
+        firebaseAuth = Firebase.auth
 
         sign_in_button.setOnClickListener {
             signIn()
@@ -53,19 +62,11 @@ class LoginFragment : Fragment() {
 
         val account = GoogleSignIn.getLastSignedInAccount(this.requireActivity())
 
-        if (account != null) {
-            Conf.token = account.idToken.toString()
-            Conf.name = account.displayName.toString()
-            Conf.familyName = account.familyName.toString()
-            Conf.id = account.id.toString()
-
-            findNavController(this).popBackStack()
-            findNavController(this).navigate(R.id.MenuFragment)
-        }
+        if (account != null) firebaseAuthWithGoogle(account)
     }
 
     private fun signIn() {
-        val signInIntent = Conf.googleSignInClient.signInIntent
+        val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(
             signInIntent, RC_SIGN_IN
         )
@@ -83,13 +84,7 @@ class LoginFragment : Fragment() {
         try {
             val account = completedTask.getResult(ApiException::class.java)
 
-            Conf.token = account?.idToken.toString()
-            Conf.name = account?.displayName.toString()
-            Conf.familyName = account?.familyName.toString()
-            Conf.id = account?.id.toString()
-
-            findNavController(this).popBackStack()
-            findNavController(this).navigate(R.id.MenuFragment)
+            if (account != null) firebaseAuthWithGoogle(account)
 
         } catch (e: ApiException) {
             Log.e("Error", e.toString())
@@ -101,5 +96,23 @@ class LoginFragment : Fragment() {
             alertDialog.setCancelable(false)
             alertDialog.show()
         }
+    }
+
+    private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+        firebaseAuth.signInWithCredential(credential)
+            .addOnCompleteListener(this.requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    Log.i("info", "signInWithCredential:success")
+                    navigateToMenu()
+                } else {
+                    Log.i("info", "signInWithCredential:failure", task.exception)
+                }
+            }
+    }
+
+    private fun navigateToMenu() {
+        findNavController(this).popBackStack()
+        findNavController(this).navigate(R.id.MenuFragment)
     }
 }

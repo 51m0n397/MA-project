@@ -6,6 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import it.simone.myproject.LoginFragment.Companion.firebaseAuth
+import it.simone.myproject.LoginFragment.Companion.googleSignInClient
 import kotlinx.android.synthetic.main.fragment_menu.*
 
 /**
@@ -24,13 +28,9 @@ class MenuFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        button_logout.setOnClickListener {
-            Conf.token = ""
-            Conf.name = ""
-            Conf.familyName = ""
-            Conf.id = ""
-
-            Conf.googleSignInClient.signOut().addOnCompleteListener {
+        button_logout.setOnClickListener { ""
+            googleSignInClient.signOut().addOnCompleteListener {
+                firebaseAuth.signOut()
                 findNavController().popBackStack()
                 findNavController().navigate(R.id.LoginFragment)
             }
