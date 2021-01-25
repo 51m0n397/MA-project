@@ -16,11 +16,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -113,16 +113,17 @@ class LoginFragment : Fragment() {
             .addOnCompleteListener(this.requireActivity()) { task ->
                 if (task.isSuccessful) {
                     Log.i("info", "signInWithCredential:success")
-                    getGlobalstatsId(account)
+                    val user = firebaseAuth.currentUser
+                    getGlobalstatsId(user!!)
                 } else {
                     Log.i("info", "signInWithCredential:failure", task.exception)
                 }
             }
     }
 
-    private fun getGlobalstatsId(account: GoogleSignInAccount) {
+    private fun getGlobalstatsId(account: FirebaseUser) {
         val database = Firebase.database
-        database.getReference("users").child(account.id.toString()).addListenerForSingleValueEvent(object :
+        database.getReference("users").child(account.uid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val userId = dataSnapshot.getValue(String::class.java)
@@ -139,7 +140,7 @@ class LoginFragment : Fragment() {
                             Log.i("info", "Error while retreiving user id")
                         } else {
                             val id = new_id.toString()
-                            database.getReference("users").child(account.id.toString()).setValue(id)
+                            database.getReference("users").child(account.uid).setValue(id)
                             Log.i("info", "New id: " + id)
                             globalstatsId = id
                             navigateToMenu()
