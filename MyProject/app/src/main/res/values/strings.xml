@@ -12,5 +12,9 @@
     <string name="score">SCORE</string>
     <string name="my_highest_score">My highest score:</string>
     <string name="leaderboard_title">LEADERBOARD</string>
+    <string name="rank_title">Rank</string>
+    <string name="player_name_tile">Player name</string>
+    <string name="score_tile">Score</string>
+    <string name="my_rank">My rank:</string>
 
 </resources>
