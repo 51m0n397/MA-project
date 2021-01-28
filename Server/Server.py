@@ -58,11 +58,11 @@ class GameId(Resource):
     def post(self, game_id):
         args = parser.parse_args()
         if game_id in games.keys():
-            if (games[game_id].state = GameState.WAITING):
+            if (games[game_id].state == GameState.WAITING):
                 games[game_id].player2 = {'name': args['player_name'], 'score': 0, 'state': PlayerState.ALIVE}
                 games[game_id].state = GameState.PLAYING
                 return jsonify(games[game_id].__dict__)
-             return abort(403, message="cannot join a game in the PLAYING state")
+            return abort(403, message="cannot join a game in the PLAYING state")
         return abort(404, message="game {} doesn't exist".format(game_id))
 
     # Updates the game with id game_id
