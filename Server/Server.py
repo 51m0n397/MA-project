@@ -1,13 +1,9 @@
 from flask import Flask,jsonify
 from flask_restful import Resource, Api, abort, reqparse
+from Enum import enum
 import random
 import uuid
 import json
-
-def enum(*sequential, **named):
-    enums = dict(zip(sequential, range(len(sequential))), **named)
-    return type('Enum', (), enums)
-
 
 app = Flask(__name__)
 api = Api(app)
