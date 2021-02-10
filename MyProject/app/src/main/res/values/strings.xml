@@ -23,5 +23,9 @@
     <string name="multi_player">Multi Player</string>
     <string name="host_game">Host Game</string>
     <string name="join_game">Join Game</string>
+    <string name="join_game_title">JOIN GAME</string>
+    <string name="no_games">No games available</string>
+    <string name="loading">Loading...</string>
+    <string name="waiting_text">Waiting for someone to join</string>
 
 </resources>

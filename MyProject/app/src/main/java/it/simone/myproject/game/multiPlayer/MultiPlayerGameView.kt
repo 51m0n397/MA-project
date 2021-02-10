@@ -6,27 +6,34 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
+import it.simone.myproject.BackButton
+import it.simone.myproject.MainActivity
 import it.simone.myproject.R
 import it.simone.myproject.game.common.Ball
 import it.simone.myproject.game.common.TileList
-import it.simone.myproject.globalstats.api.GlobalstatsApi
-import it.simone.myproject.login.LoginFragment
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
+import it.simone.myproject.gameserver.api.GameserverApi
+import it.simone.myproject.gameserver.model.Game
+import it.simone.myproject.gameserver.model.GameState
+import it.simone.myproject.gameserver.model.PlayerState
+import kotlinx.coroutines.*
 
-class MultiPlayerGameView(context: Context?) : View(context), SensorEventListener, View.OnTouchListener {
+class MultiPlayerGameView(context: Context?) : View(context), SensorEventListener {
+
+    companion object {
+        lateinit var game: Game
+        var playerNum = 1
+    }
 
     private var gameLoop: Job? = null
+    private var updateLoop: Job? = null
 
     private var tileList: TileList? = null
     private var ball: Ball? = null
     private var xAcceleration = 0f
-    private var gameOver = false
+
+    private var playerState = PlayerState.ALIVE
 
     private var scrollSpeed = 0.001f
     private var scrollAcceleration = 0.00000002f
@@ -36,7 +43,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         ball = Ball()
         xAcceleration = 0f
         scrollSpeed = 0.001f
-        gameOver = false
+        playerState = PlayerState.ALIVE
     }
 
     init {
@@ -46,7 +53,6 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                 sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
                 SensorManager.SENSOR_DELAY_NORMAL
         )
-        setOnTouchListener(this)
         newGame()
     }
 
@@ -65,7 +71,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
     }
 
     fun play() {
-        if (!gameOver) {
+        if (playerState == PlayerState.ALIVE) {
             gameLoop = GlobalScope.launch {
                 var lastIterationTime = System.currentTimeMillis()
 
@@ -77,10 +83,39 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                     update(timePassed)
 
                     if (ball?.gameOver == true) {
-                        gameOver = true
-                        GlobalstatsApi().postScore(LoginFragment.globalstatsId, tileList!!.tileNum)
+                        //gameOver = true
+                        playerState = PlayerState.DEAD
                         break
                     }
+                }
+            }
+
+            updateLoop = GlobalScope.launch {
+                while (isActive) {
+                    val state = playerState
+                    val updatedGame = GameserverApi().updateGame(playerNum, tileList!!.tileNum, state, game.id)
+                    if (updatedGame != null) {
+                        game = updatedGame
+                    } else {
+                        //error
+                    }
+
+                    if (state == PlayerState.DEAD) {
+                        break
+                    }
+                    delay(500L)
+                }
+
+                MainActivity.backButton = BackButton.BACK_TO_MENU
+
+                while (isActive && game.state == GameState.PLAYING) {
+                    val updatedGame = GameserverApi().getGame(game.id)
+                    if (updatedGame != null) {
+                        game = updatedGame
+                    } else {
+                        //error
+                    }
+                    delay(500L)
                 }
             }
         }
@@ -88,7 +123,10 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
     fun pause() {
         gameLoop?.cancel()
+        updateLoop?.cancel()
     }
+
+    var i = 0F
 
 
     override fun onDraw(canvas: Canvas?) {
@@ -151,41 +189,52 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         ball?.draw(frame, canvas)
 
 
-        val r = Rect()
-        val t = resources.getString(R.string.game_over)
 
-        var gameOverPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = (width/t.length).toFloat()
-        }
 
-        gameOverPaint.getTextBounds(t, 0, t.length, r)
-
-        val x: Float = width / 2f - r.width() / 2f - r.left
-        val y: Float = height / 2f + r.height() / 2f - r.bottom
-
-        if (gameOver) {
+        if (playerState == PlayerState.DEAD) {
             canvas?.drawARGB(100, 0, 0, 0)
-            canvas?.drawText(t, x, y, gameOverPaint)
+
+            when(game.state) {
+                GameState.PLAYING -> {
+                    val size = 0.15f*width
+                    canvas?.drawArc(
+                            width/2-size,
+                            height/2-size,
+                            width/2+size,
+                            height/2+size,
+                            i++,
+                            270F,
+                            false,
+                            framePaint
+                    )
+                    invalidate()
+                }
+                GameState.OVER -> {
+                    var win = false
+                    when(playerNum) {
+                        1 -> win = game.player1.score >= game.player2.score
+                        2 -> win = game.player2.score >= game.player1.score
+                    }
+
+                    val r = Rect()
+                    val t = if(win) "You won" else "You lost"
+
+                    var gameOverPaint = Paint().apply {
+                        color = Color.WHITE
+                        textSize = (width/t.length).toFloat()
+                    }
+
+                    gameOverPaint.getTextBounds(t, 0, t.length, r)
+
+                    val x: Float = width / 2f - r.width() / 2f - r.left
+                    val y: Float = height / 2f + r.height() / 2f - r.bottom
+
+                    canvas?.drawText(t, x, y, gameOverPaint)
+                }
+            }
         } else {
             invalidate()
         }
-
-        //Log.i("info", width.toString() + " " + height.toString())
-    }
-
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        when (event?.action) {
-            MotionEvent.ACTION_UP -> {
-                if (gameOver) {
-                    newGame()
-                    invalidate()
-                    play()
-                }
-
-            }
-        }
-        return true
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
