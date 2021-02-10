@@ -1,4 +1,4 @@
-package it.simone.myproject
+package it.simone.myproject.login
 
 import android.app.AlertDialog
 import android.content.Intent
@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import it.simone.myproject.R
 import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.android.synthetic.main.fragment_login.*
 import kotlinx.coroutines.GlobalScope

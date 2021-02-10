@@ -1,4 +1,4 @@
-package it.simone.myproject
+package it.simone.myproject.leaderboard
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import it.simone.myproject.LoginFragment.Companion.globalstatsId
+import it.simone.myproject.R
+import it.simone.myproject.login.LoginFragment.Companion.globalstatsId
 import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.android.synthetic.main.fragment_leaderboard.*
 import kotlinx.coroutines.Dispatchers

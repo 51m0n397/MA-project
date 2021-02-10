@@ -4,9 +4,9 @@
     <string name="login_fragment_label">Login Fragment</string>
     <string name="menu_fragment_label">Menu Fragment</string>
     <string name="leaderboard_fragment_label">Leaderboard Fragment</string>
-    <string name="game_fragment_label">Game Fragment</string>
+    <string name="single_player_fragment_label">Single player Fragment</string>
     <string name="log_out">Log out</string>
-    <string name="new_game">New Game</string>
+    <string name="single_player">Single Player</string>
     <string name="leaderboard">Leaderboard</string>
     <string name="game_over">Game Over</string>
     <string name="score">SCORE</string>

@@ -6,10 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import it.simone.myproject.LoginFragment.Companion.firebaseAuth
-import it.simone.myproject.LoginFragment.Companion.googleSignInClient
+import it.simone.myproject.login.LoginFragment.Companion.firebaseAuth
+import it.simone.myproject.login.LoginFragment.Companion.googleSignInClient
 import kotlinx.android.synthetic.main.fragment_menu.*
 
 /**
@@ -40,8 +38,8 @@ class MenuFragment : Fragment() {
             findNavController().navigate(R.id.action_MenuFragment_to_LeaderboardFragment)
         }
 
-        button_newgame.setOnClickListener {
-            findNavController().navigate(R.id.action_MenuFragment_to_GameFragment)
+        button_single_player.setOnClickListener {
+            findNavController().navigate(R.id.action_MenuFragment_to_SinglePlayerFragment)
         }
     }
 }

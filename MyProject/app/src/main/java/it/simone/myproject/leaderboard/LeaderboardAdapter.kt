@@ -1,9 +1,10 @@
-package it.simone.myproject
+package it.simone.myproject.leaderboard
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import it.simone.myproject.R
 import it.simone.myproject.globalstats.model.Player
 import kotlinx.android.synthetic.main.item_leaderboard.view.*
 

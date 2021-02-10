@@ -1,21 +1,22 @@
-package it.simone.myproject
+package it.simone.myproject.game.singlePlayer
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import androidx.core.content.ContextCompat
-import it.simone.myproject.LoginFragment.Companion.globalstatsId
+import it.simone.myproject.R
+import it.simone.myproject.game.common.Ball
+import it.simone.myproject.game.common.TileList
+import it.simone.myproject.login.LoginFragment.Companion.globalstatsId
 import it.simone.myproject.globalstats.api.GlobalstatsApi
 import kotlinx.coroutines.*
 
-class GameView(context: Context?) : View(context), SensorEventListener, View.OnTouchListener {
+class SinglePlayerView(context: Context?) : View(context), SensorEventListener, View.OnTouchListener {
 
     private var gameLoop: Job? = null
 

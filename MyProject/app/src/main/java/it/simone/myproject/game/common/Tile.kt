@@ -1,4 +1,4 @@
-package it.simone.myproject
+package it.simone.myproject.game.common
 
 import android.graphics.*
 import kotlin.random.Random

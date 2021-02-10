@@ -1,4 +1,4 @@
-package it.simone.myproject
+package it.simone.myproject.game.singlePlayer
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,28 +6,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 
-class GameFragment : Fragment() {
+class SinglePlayerFragment : Fragment() {
 
-    lateinit var gameView : GameView
+    lateinit var singlePlayerView : SinglePlayerView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        gameView = GameView(context)
+        singlePlayerView = SinglePlayerView(context)
 
-        return gameView
+        return singlePlayerView
     }
 
     override fun onResume() {
         super.onResume()
 
-        gameView.play()
+        singlePlayerView.play()
     }
 
     override fun onPause() {
         super.onPause()
 
-        gameView.pause()
+        singlePlayerView.pause()
     }
 }
