@@ -46,7 +46,7 @@ class GamesManager(threading.Thread):
             threadLock.acquire()
             for game in games.copy().values():
                 if time.time() > game.timestamp + timeout:
-                    print("delating stale game: " + game.id)
+                    print("deleting stale game: " + game.id)
                     del games[game.id]
             threadLock.release()
     
