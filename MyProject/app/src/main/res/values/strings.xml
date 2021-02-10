@@ -5,6 +5,10 @@
     <string name="menu_fragment_label">Menu Fragment</string>
     <string name="leaderboard_fragment_label">Leaderboard Fragment</string>
     <string name="single_player_fragment_label">Single player Fragment</string>
+    <string name="multi_player_menu_fragment_label">Multi player menu Fragment</string>
+    <string name="multi_player_game_fragment_label">Multi player game Fragment</string>
+    <string name="host_game_fragment_label">Host game Fragment</string>
+    <string name="join_game_fragment_label">Join Game Fragment</string>
     <string name="log_out">Log out</string>
     <string name="single_player">Single Player</string>
     <string name="leaderboard">Leaderboard</string>
@@ -16,5 +20,8 @@
     <string name="player_name_tile">Player name</string>
     <string name="score_tile">Score</string>
     <string name="my_rank">My rank:</string>
+    <string name="multi_player">Multi Player</string>
+    <string name="host_game">Host Game</string>
+    <string name="join_game">Join Game</string>
 
 </resources>

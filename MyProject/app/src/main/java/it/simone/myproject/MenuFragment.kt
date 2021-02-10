@@ -41,5 +41,9 @@ class MenuFragment : Fragment() {
         button_single_player.setOnClickListener {
             findNavController().navigate(R.id.action_MenuFragment_to_SinglePlayerFragment)
         }
+
+        button_multi_player.setOnClickListener {
+            findNavController().navigate(R.id.action_MenuFragment_to_MultiPlayerMenuFragment)
+        }
     }
 }

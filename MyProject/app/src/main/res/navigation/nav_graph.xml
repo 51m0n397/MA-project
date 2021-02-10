@@ -30,6 +30,10 @@
             app:destination="@id/LeaderboardFragment" />
 
         <action
+            android:id="@+id/action_MenuFragment_to_MultiPlayerMenuFragment"
+            app:destination="@id/MultiPlayerMenuFragment" />
+
+        <action
             android:id="@+id/action_MenuFragment_to_SinglePlayerFragment"
             app:destination="@id/SinglePlayerFragment" />
     </fragment>
@@ -42,6 +46,57 @@
         <action
             android:id="@+id/action_LeaderboardFragment_to_MenuFragment"
             app:destination="@id/MenuFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/MultiPlayerMenuFragment"
+        android:name="it.simone.myproject.game.multiPlayer.MultiPlayerMenuFragment"
+        android:label="@string/multi_player_menu_fragment_label"
+        tools:layout="@layout/fragment_multi_player_menu">
+
+        <action
+            android:id="@+id/action_MultiPlayerMenuFragment_to_MenuFragment"
+            app:destination="@id/MenuFragment" />
+        <action
+            android:id="@+id/action_MultiPlayerMenuFragment_to_HostGameFragment"
+            app:destination="@id/HostGameFragment" />
+        <action
+            android:id="@+id/action_MultiPlayerMenuFragment_to_JoinGameFragment"
+            app:destination="@id/JoinGameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/HostGameFragment"
+        android:name="it.simone.myproject.game.multiPlayer.HostGameFragment"
+        android:label="@string/host_game_fragment_label"
+        tools:layout="@layout/fragment_host_game">
+
+        <action
+            android:id="@+id/action_HostGameFragment_to_MultiPlayerMenuFragment"
+            app:destination="@id/MultiPlayerMenuFragment" />
+        <action
+            android:id="@+id/action_HostGameFragment_to_MultiPlayerGameFragment"
+            app:destination="@id/MultiPlayerGameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/JoinGameFragment"
+        android:name="it.simone.myproject.game.multiPlayer.JoinGameFragment"
+        android:label="@string/join_game_fragment_label"
+        tools:layout="@layout/fragment_join_game">
+
+        <action
+            android:id="@+id/action_JoinGameFragment_to_MultiPlayerMenuFragment"
+            app:destination="@id/MultiPlayerMenuFragment" />
+        <action
+            android:id="@+id/action_JoinGameFragment_to_MultiPlayerGameFragment"
+            app:destination="@id/MultiPlayerGameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/MultiPlayerGameFragment"
+        android:name="it.simone.myproject.game.multiPlayer.MultiPlayerGameFragment"
+        android:label="@string/multi_player_game_fragment_label">
+
+        <action
+            android:id="@+id/action_MultiPlayerGameFragment_to_MultiPlayerMenuFragment"
+            app:destination="@id/MultiPlayerMenuFragment" />
     </fragment>
     <fragment
         android:id="@+id/SinglePlayerFragment"
