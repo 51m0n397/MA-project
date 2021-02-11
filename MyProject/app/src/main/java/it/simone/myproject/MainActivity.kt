@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
        when(backButton) {
            BackButton.NORMAL -> super.onBackPressed()
            BackButton.BACK_TO_MENU -> {
+               findNavController(R.id.nav_host_fragment).popBackStack()
                findNavController(R.id.nav_host_fragment).navigate(R.id.MenuFragment)
                backButton = BackButton.NORMAL
            }

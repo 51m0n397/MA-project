@@ -40,13 +40,11 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
     private val textPaint = Paint().apply {
         color = Color.WHITE
-        textSize = 0.05f * height
     }
 
     private val framePaint = Paint().apply {
         color = Color.WHITE
         style = Paint.Style.STROKE
-        strokeWidth = 0.01f * height
     }
 
     private val gameOverPaint = Paint().apply {
@@ -155,6 +153,8 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
         canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_700))
 
+        textPaint.textSize = 0.05f * height
+
         canvas?.drawText(
                 resources.getString(R.string.score) + ": " + tileList!!.tileNum,
                 0.03f * width,
@@ -162,6 +162,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                 textPaint
         )
 
+        framePaint.strokeWidth = 0.01f * height
         val offset = 0.07f * height
         val remainingHeight = height - offset
         val border = framePaint.strokeWidth/2

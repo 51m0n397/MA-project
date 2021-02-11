@@ -47,7 +47,7 @@ class HostGameFragment: Fragment() {
                             val alertDialog: AlertDialog = builder.create()
                             alertDialog.show()
                         }
-                        findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerMenuFragment)
+                        findNavController().popBackStack()
                         break
                     } else if (newGame.state == GameState.PLAYING) {
                         MultiPlayerGameView.game = newGame
@@ -67,7 +67,7 @@ class HostGameFragment: Fragment() {
                     builder.setMessage("Failed to host game")
                     val alertDialog: AlertDialog = builder.create()
                     alertDialog.show()
-                    findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerMenuFragment)
+                    findNavController().popBackStack()
                 }
             }
 
