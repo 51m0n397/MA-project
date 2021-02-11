@@ -111,8 +111,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
             updateLoop = GlobalScope.launch {
                 while (isActive) {
                     val state = playerState
-                    val updatedGame = GameserverApi().updateGame(
-                            playerNum, tileList!!.tileNum, state, game.id)
+                    val updatedGame = GameserverApi().updateGame(tileList!!.tileNum, state, game.id)
                     if (updatedGame != null) {
                         game = updatedGame
                     } else {

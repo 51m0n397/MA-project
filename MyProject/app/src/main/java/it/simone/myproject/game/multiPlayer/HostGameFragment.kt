@@ -34,7 +34,7 @@ class HostGameFragment: Fragment() {
         super.onResume()
 
         waitLoop = GlobalScope.launch {
-            val game = GameserverApi().createGame(LoginFragment.firebaseAuth.currentUser?.displayName.toString())
+            val game = GameserverApi().createGame()
 
             if (game != null) {
                 while (isActive) {

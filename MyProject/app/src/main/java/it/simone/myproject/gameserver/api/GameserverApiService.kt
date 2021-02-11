@@ -9,28 +9,22 @@ interface GameserverApiService {
     @GET("/")
     suspend fun getGames(): NetworkResponse<List<Game>, ErrorResponse>
 
-    @FormUrlEncoded
     @POST("/")
-    suspend fun createGame(
-            @Field("player_name") playerName: String
-    ): NetworkResponse<Game, ErrorResponse>
+    suspend fun createGame(): NetworkResponse<Game, ErrorResponse>
 
     @GET("/{game_id}")
     suspend fun getGame(
             @Path("game_id") gameId: String
     ): NetworkResponse<Game, ErrorResponse>
 
-    @FormUrlEncoded
     @POST("/{game_id}")
     suspend fun joinGame(
-            @Field("player_name") playerName: String,
             @Path("game_id") gameId: String
     ): NetworkResponse<Game, ErrorResponse>
 
     @FormUrlEncoded
     @PUT("/{game_id}")
     suspend fun updateGame(
-            @Field("player") player: Int,
             @Field("score") score: Int,
             @Field("state") state: Int,
             @Path("game_id") gameId: String

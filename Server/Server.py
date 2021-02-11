@@ -1,58 +1,80 @@
-from flask import Flask,jsonify
+from flask import Flask, jsonify
+from flask_httpauth import HTTPTokenAuth
 from flask_restful import Resource, Api, abort, reqparse
 from GameManager import *
 import signal
+from google.oauth2 import id_token
+from google.auth.transport import requests
+
+CLIENT_ID = "410429140054-121fs1u1a15ijptjap8dfla1lh0gg4vs.apps.googleusercontent.com"
 
 app = Flask(__name__)
 api = Api(app)
+auth = HTTPTokenAuth(scheme='Bearer')
 
-parser = reqparse.RequestParser()
-parser.add_argument('player_name', type=str, required=True)
+@auth.verify_token
+def verify_token(token):
+    try:
+        user = id_token.verify_oauth2_token(token, requests.Request(), CLIENT_ID)
+        return user
+    except ValueError:
+        pass
+
+@auth.error_handler
+def auth_error(status):
+    return abort(status, message="Token not valid")
+
 
 putParser = reqparse.RequestParser()
-putParser.add_argument('player', type=int, required=True)
 putParser.add_argument('score', type=int, required=True)
 putParser.add_argument('state', type=int, required=True)
 
 class GamesList(Resource):
     # Returns the list of pending games
+    @auth.login_required
     def get(self):
-        return getPendingGames()
+        return getPendingGames(auth.current_user())
 
     # Creates a new game
+    @auth.login_required
     def post(self):
-        args = parser.parse_args()
-        return jsonify(newGame(args['player_name']))
+        return jsonify(newGame(auth.current_user()))
 
 class GameId(Resource):
     # Returns the game with id game_id
+    @auth.login_required
     def get(self, game_id):
-        game = getGame(game_id)
+        game = getGame(game_id, auth.current_user())
         if game == Error.NOT_FOUND:
             return abort(404, message="game {} doesn't exist".format(game_id))
+        if game == Error.NOT_AUTHORIZED:
+            return abort(403, message="cannot access this game")
         return game
             
             
     # Joins the game with id game_id
+    @auth.login_required
     def post(self, game_id):
-        args = parser.parse_args()
-        game = joinGame(game_id, args['player_name'])
+        game = joinGame(game_id, auth.current_user())
         if game == Error.NOT_FOUND:
             return abort(404, message="game {} doesn't exist".format(game_id))
         if game == Error.NOT_WAITING:
             return abort(403, message="cannot join a game that is not in the WAITING state")
+        if game == Error.NOT_AUTHORIZED:
+            return abort(403, message="cannot join a game you are hosting")
         return game
 
     # Updates the game with id game_id
+    @auth.login_required
     def put(self, game_id):
         args = putParser.parse_args()
-        if args['player'] != 1 and args['player'] != 2:
-            return abort(400, message="argument 'player' can only be 1 or 2")
-        game = updateGame(game_id, args['player'], args['score'], args['state'])
+        game = updateGame(game_id, auth.current_user(), args['score'], args['state'])
         if game == Error.NOT_FOUND:
             return abort(404, message="game {} doesn't exist".format(game_id))
         if game == Error.NOT_PLAYING:
             return abort(403, message="cannot update a game that is not in the PLAYING state")
+        if game == Error.NOT_AUTHORIZED:
+            return abort(403, message="cannot access this game")
         return game
 
 api.add_resource(GamesList,'/')

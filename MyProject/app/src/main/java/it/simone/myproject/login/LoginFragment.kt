@@ -40,6 +40,7 @@ class LoginFragment : Fragment() {
         val clientId = "410429140054-121fs1u1a15ijptjap8dfla1lh0gg4vs.apps.googleusercontent.com"
         lateinit var firebaseAuth: FirebaseAuth
         lateinit var googleSignInClient: GoogleSignInClient
+        lateinit var googleAccount: GoogleSignInAccount
         lateinit var globalstatsId: String
     }
 
@@ -108,6 +109,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+        googleAccount = account
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         firebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener(this.requireActivity()) { task ->

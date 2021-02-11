@@ -13,7 +13,6 @@ import it.simone.myproject.MainActivity
 import it.simone.myproject.R
 import it.simone.myproject.gameserver.api.GameserverApi
 import it.simone.myproject.gameserver.model.Game
-import it.simone.myproject.login.LoginFragment
 import kotlinx.android.synthetic.main.item_join_game.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -39,9 +38,7 @@ class JoinGameAdapter(
         holder.itemView.view_player_name.setOnClickListener {
             loading_view.visibility = View.VISIBLE
             GlobalScope.launch {
-                val game = GameserverApi().joinGame(
-                        LoginFragment.firebaseAuth.currentUser?.displayName.toString(),
-                        list[position])
+                val game = GameserverApi().joinGame(list[position])
 
                 withContext(Dispatchers.Main) {
                     loading_view.visibility = View.GONE

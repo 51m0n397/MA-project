@@ -5,7 +5,7 @@ from Enum import enum
 import copy
 
 
-Error = enum('NOT_FOUND', 'NOT_WAITING', 'NOT_PLAYING')
+Error = enum('NOT_FOUND', 'NOT_WAITING', 'NOT_PLAYING', 'NOT_AUTHORIZED')
 GameState = enum('WAITING', 'PLAYING', 'OVER')
 PlayerState = enum('ALIVE', 'DEAD')
 
@@ -15,10 +15,16 @@ timeout = 30
 EXIT = threading.Event()
 
 class Player:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, user):
+        self.name = user['name']
+        self.id = user['sub']
         self.score = 0
         self.state = PlayerState.ALIVE
+
+    def dict(self):
+        player = copy.deepcopy(self.__dict__)
+        del player['id']
+        return player
 
 
 class Game:
@@ -29,10 +35,10 @@ class Game:
         self.state = GameState.WAITING
         self.timestamp = time.time()
 
-    def obj(self):
+    def dict(self):
         game = copy.deepcopy(self.__dict__)
-        game['player1'] = self.player1.__dict__
-        game['player2'] = None if self.player2 == None else self.player2.__dict__
+        game['player1'] = self.player1.dict()
+        game['player2'] = None if self.player2 == None else self.player2.dict()
         return game
 
 
@@ -59,21 +65,23 @@ def newGame(player1):
     threadLock.acquire()
     games[game.id] = game
     threadLock.release()
-    return game.obj()
+    return game.dict()
 
 
-def getPendingGames():
+def getPendingGames(player):
     threadLock.acquire()
-    pendingGames = [v.obj() for v in games.values() if v.state == GameState.WAITING]
+    pendingGames = [v.dict() for v in games.values() if v.state == GameState.WAITING and v.player1.id != player['sub']]
     threadLock.release()
     return pendingGames
 
 
-def getGame(game_id):
+def getGame(game_id, user):
     game = Error.NOT_FOUND
     threadLock.acquire()
     if game_id in games.keys():
-        game = games[game_id].obj()
+        game = Error.NOT_AUTHORIZED
+        if (games[game_id].player1 != None and games[game_id].player1.id == user['sub']) or (games[game_id].player2 != None and games[game_id].player2.id == user['sub']):
+            game = games[game_id].dict()
     threadLock.release()
     return game
 
@@ -84,24 +92,34 @@ def joinGame(game_id, player2):
     if game_id in games.keys():
         game = games[game_id]
         if game.state == GameState.WAITING:
-            game.player2 = Player(player2)
-            game.state = GameState.PLAYING
-            game.timestamp = time.time()
-            game = game.obj()
+            if game.player1.id == player2['sub']:
+                game = Error.NOT_AUTHORIZED
+            else:
+                game.player2 = Player(player2)
+                game.state = GameState.PLAYING
+                game.timestamp = time.time()
+                game = game.dict()
         else:
             game = Error.NOT_WAITING
     threadLock.release()
     return game
 
 
-def updateGame(game_id, num, score, state):
+def updateGame(game_id, user, score, state):
     game = Error.NOT_FOUND
     threadLock.acquire()
     if game_id in games.keys():
         game = games[game_id]
-        if game.state == GameState.PLAYING:
+        player = None
+
+        if user['sub'] == game.player1.id:
             player = game.player1
-            if num == 2: player = game.player2
+        elif user['sub'] == game.player2.id:
+            player = game.player2
+        
+        if player == None:
+            game = Error.NOT_AUTHORIZED
+        elif game.state == GameState.PLAYING:
             if state == PlayerState.ALIVE and player.state == PlayerState.ALIVE:
                 if score > player.score:
                     player.score = score
@@ -112,7 +130,7 @@ def updateGame(game_id, num, score, state):
             if game.player1.state == PlayerState.DEAD and game.player2.state == PlayerState.DEAD:
                 game.state = GameState.OVER
             game.timestamp = time.time()
-            game = game.obj()
+            game = game.dict()
         else:
             game = Error.NOT_PLAYING
     threadLock.release()
