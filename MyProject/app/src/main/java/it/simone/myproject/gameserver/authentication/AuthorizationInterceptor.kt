@@ -1,4 +1,4 @@
-package it.simone.myproject.gameserver.api
+package it.simone.myproject.gameserver.authentication
 
 import it.simone.myproject.login.LoginFragment
 import okhttp3.Interceptor

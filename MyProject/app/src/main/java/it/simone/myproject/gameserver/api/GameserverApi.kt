@@ -3,6 +3,8 @@ package it.simone.myproject.gameserver.api
 import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
+import it.simone.myproject.gameserver.authentication.AuthorizationInterceptor
+import it.simone.myproject.gameserver.authentication.TokenRefreshAuthenticator
 import it.simone.myproject.gameserver.model.Game
 import it.simone.myproject.gameserver.model.PlayerState
 import okhttp3.OkHttpClient
@@ -15,9 +17,11 @@ class GameserverApi {
     private val baseUrl = "http://192.168.1.124:5000/"
 
     init {
+        val tokenRefreshAuthenticator = TokenRefreshAuthenticator()
         val authorizationInterceptor = AuthorizationInterceptor()
 
         val client = OkHttpClient.Builder()
+                .authenticator(tokenRefreshAuthenticator)
                 .addInterceptor(authorizationInterceptor)
                 .build()
 
