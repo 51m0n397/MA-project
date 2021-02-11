@@ -38,6 +38,26 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
     private var scrollSpeed = 0.001f
     private var scrollAcceleration = 0.00000002f
 
+    private val textPaint = Paint().apply {
+        color = Color.WHITE
+        textSize = 0.05f * height
+    }
+
+    private val framePaint = Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.STROKE
+        strokeWidth = 0.01f * height
+    }
+
+    private val gameOverPaint = Paint().apply {
+        color = Color.WHITE
+    }
+
+    private val frame = RectF()
+    private val textRect = Rect()
+
+    private var spinnerRotation = 0F
+
     private fun newGame() {
         tileList = TileList()
         ball = Ball()
@@ -93,7 +113,8 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
             updateLoop = GlobalScope.launch {
                 while (isActive) {
                     val state = playerState
-                    val updatedGame = GameserverApi().updateGame(playerNum, tileList!!.tileNum, state, game.id)
+                    val updatedGame = GameserverApi().updateGame(
+                            playerNum, tileList!!.tileNum, state, game.id)
                     if (updatedGame != null) {
                         game = updatedGame
                     } else {
@@ -113,7 +134,9 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                     if (updatedGame != null) {
                         game = updatedGame
                     } else {
-                        //error
+                        //the game was deleted by the server
+                        game.state = GameState.OVER
+                        break
                     }
                     delay(500L)
                 }
@@ -126,24 +149,11 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         updateLoop?.cancel()
     }
 
-    var i = 0F
-
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
         canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_700))
-
-        var textPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = 0.05f * height
-        }
-
-        var framePaint = Paint().apply {
-            color = Color.WHITE
-            style = Paint.Style.STROKE
-            strokeWidth = 0.01f * height
-        }
 
         canvas?.drawText(
                 resources.getString(R.string.score) + ": " + tileList!!.tileNum,
@@ -153,12 +163,8 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         )
 
         val offset = 0.07f * height
-
         val remainingHeight = height - offset
-
         val border = framePaint.strokeWidth/2
-
-        val frame = RectF()
 
         if (remainingHeight/width > 5f/3f) {
             // taller
@@ -189,8 +195,6 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         ball?.draw(frame, canvas)
 
 
-
-
         if (playerState == PlayerState.DEAD) {
             canvas?.drawARGB(100, 0, 0, 0)
 
@@ -202,7 +206,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                             height/2-size,
                             width/2+size,
                             height/2+size,
-                            i++,
+                            spinnerRotation++,
                             270F,
                             false,
                             framePaint
@@ -216,18 +220,13 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
                         2 -> win = game.player2.score >= game.player1.score
                     }
 
-                    val r = Rect()
-                    val t = if(win) "You won" else "You lost"
+                    val t = resources.getString(if (win) R.string.won else R.string.lost)
 
-                    var gameOverPaint = Paint().apply {
-                        color = Color.WHITE
-                        textSize = (width/t.length).toFloat()
-                    }
+                    gameOverPaint.textSize = (width/t.length).toFloat()
+                    gameOverPaint.getTextBounds(t, 0, t.length, textRect)
 
-                    gameOverPaint.getTextBounds(t, 0, t.length, r)
-
-                    val x: Float = width / 2f - r.width() / 2f - r.left
-                    val y: Float = height / 2f + r.height() / 2f - r.bottom
+                    val x: Float = width / 2f - textRect.width() / 2f - textRect.left
+                    val y: Float = height / 2f + textRect.height() / 2f - textRect.bottom
 
                     canvas?.drawText(t, x, y, gameOverPaint)
                 }

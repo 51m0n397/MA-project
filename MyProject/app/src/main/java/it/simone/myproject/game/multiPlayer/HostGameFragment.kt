@@ -1,7 +1,7 @@
 package it.simone.myproject.game.multiPlayer
 
+import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +13,6 @@ import it.simone.myproject.R
 import it.simone.myproject.gameserver.api.GameserverApi
 import it.simone.myproject.gameserver.model.GameState
 import it.simone.myproject.login.LoginFragment
-import kotlinx.android.synthetic.main.fragment_join_game.*
 import kotlinx.coroutines.*
 
 class HostGameFragment: Fragment() {
@@ -40,18 +39,36 @@ class HostGameFragment: Fragment() {
             if (game != null) {
                 while (isActive) {
                     val newGame = GameserverApi().getGame(game.id)
-                    if (newGame != null && newGame.state == GameState.PLAYING) break
+                    if (newGame == null) {
+                        withContext(Dispatchers.Main) {
+                            val builder = AlertDialog.Builder(context)
+                            builder.setTitle("Timeout!")
+                            builder.setMessage("No one joined the game")
+                            val alertDialog: AlertDialog = builder.create()
+                            alertDialog.show()
+                        }
+                        findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerMenuFragment)
+                        break
+                    } else if (newGame.state == GameState.PLAYING) {
+                        MultiPlayerGameView.game = newGame
+                        MultiPlayerGameView.playerNum = 1
+                        MainActivity.backButton = BackButton.DISABLED
+                        findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerGameFragment)
+                        break
+                    }
                     delay(1000L)
                 }
 
-                MultiPlayerGameView.game = game
-                MultiPlayerGameView.playerNum = 1
-                MainActivity.backButton = BackButton.DISABLED
-                findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerGameFragment)
-
             } else {
                 // ERROR
-                findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerMenuFragment)
+                withContext(Dispatchers.Main) {
+                    val builder = AlertDialog.Builder(context)
+                    builder.setTitle("Error!")
+                    builder.setMessage("Failed to host game")
+                    val alertDialog: AlertDialog = builder.create()
+                    alertDialog.show()
+                    findNavController().navigate(R.id.action_HostGameFragment_to_MultiPlayerMenuFragment)
+                }
             }
 
         }

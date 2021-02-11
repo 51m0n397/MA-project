@@ -22,7 +22,10 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
        when(backButton) {
            BackButton.NORMAL -> super.onBackPressed()
-           BackButton.BACK_TO_MENU -> findNavController(R.id.nav_host_fragment).navigate(R.id.MenuFragment)
+           BackButton.BACK_TO_MENU -> {
+               findNavController(R.id.nav_host_fragment).navigate(R.id.MenuFragment)
+               backButton = BackButton.NORMAL
+           }
        }
     }
 }

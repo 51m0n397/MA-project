@@ -103,7 +103,6 @@ class LoginFragment : Fragment() {
             builder.setTitle("Error!")
             builder.setMessage("Login failed")
             val alertDialog: AlertDialog = builder.create()
-            alertDialog.setCancelable(false)
             alertDialog.show()
         }
     }

@@ -27,5 +27,7 @@
     <string name="no_games">No games available</string>
     <string name="loading">Loading...</string>
     <string name="waiting_text">Waiting for someone to join</string>
+    <string name="won">You won!</string>
+    <string name="lost">You lost</string>
 
 </resources>
