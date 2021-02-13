@@ -5,6 +5,7 @@ from GameManager import *
 import signal
 from google.oauth2 import id_token
 from google.auth.transport import requests
+import atexit
 
 CLIENT_ID = "410429140054-121fs1u1a15ijptjap8dfla1lh0gg4vs.apps.googleusercontent.com"
 
@@ -81,10 +82,11 @@ api.add_resource(GamesList,'/')
 api.add_resource(GameId,'/<game_id>')
 
 manager = GamesManager()
+manager.start()
+atexit.register(manager.start)
 
 if __name__ == '__main__':
     print('starting...api')
-    manager.start()
     try:
         app.run(host='0.0.0.0', threaded=True)
     finally:

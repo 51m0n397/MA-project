@@ -14,7 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 class GameserverApi {
     private val service: GameserverApiService
 
-    private val baseUrl = "http://192.168.1.124:5000/"
+    //private val baseUrl = "http://192.168.1.124:5000/"
+    private val baseUrl = "http://51m0n397.pythonanywhere.com"
 
     init {
         val tokenRefreshAuthenticator = TokenRefreshAuthenticator()
