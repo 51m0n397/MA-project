@@ -1,39 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:weightSum="8">
 
-        <Button
-            android:id="@+id/button_host_game"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/host_game"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center">
 
-        <Button
-            android:id="@+id/button_join_game"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/join_game"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_host_game" />
+            <TextView
+                android:id="@+id/view_title1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAlignment="center"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/title_size"
+                android:textStyle="bold" />
+        </TableRow>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/button_host_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/host_game"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/button_join_game"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/join_game"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
+
+    </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

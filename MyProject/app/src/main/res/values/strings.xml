@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyProject</string>
+    <string name="app_name">FallDown</string>
     <!-- Strings used for fragments for navigation -->
     <string name="login_fragment_label">Login Fragment</string>
     <string name="menu_fragment_label">Menu Fragment</string>

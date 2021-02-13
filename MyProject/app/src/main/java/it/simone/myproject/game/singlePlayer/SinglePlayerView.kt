@@ -28,6 +28,22 @@ class SinglePlayerView(context: Context?) : View(context), SensorEventListener, 
     private var scrollSpeed = 0.001f
     private var scrollAcceleration = 0.00000002f
 
+    private val textPaint = Paint().apply {
+        color = Color.WHITE
+    }
+
+    private val framePaint = Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.STROKE
+    }
+
+    private val gameOverPaint = Paint().apply {
+        color = Color.WHITE
+    }
+
+    private val frame = RectF()
+    private val textRect = Rect()
+
     private fun newGame() {
         tileList = TileList()
         ball = Ball()
@@ -91,33 +107,21 @@ class SinglePlayerView(context: Context?) : View(context), SensorEventListener, 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_700))
+        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_500))
 
-        var textPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = 0.05f * height
-        }
-
-        var framePaint = Paint().apply {
-            color = Color.WHITE
-            style = Paint.Style.STROKE
-            strokeWidth = 0.01f * height
-        }
+        textPaint.textSize = 0.05f * height
 
         canvas?.drawText(
-                resources.getString(R.string.score) + ": " + tileList!!.tileNum,
-                0.03f * width,
-                0.05f * height,
-                textPaint
+            resources.getString(R.string.score) + ": " + tileList!!.tileNum,
+            0.03f * width,
+            0.05f * height,
+            textPaint
         )
 
+        framePaint.strokeWidth = 0.01f * height
         val offset = 0.07f * height
-
         val remainingHeight = height - offset
-
         val border = framePaint.strokeWidth/2
-
-        val frame = RectF()
 
         if (remainingHeight/width > 5f/3f) {
             // taller
@@ -148,18 +152,13 @@ class SinglePlayerView(context: Context?) : View(context), SensorEventListener, 
         ball?.draw(frame, canvas)
 
 
-        val r = Rect()
         val t = resources.getString(R.string.game_over)
 
-        var gameOverPaint = Paint().apply {
-            color = Color.WHITE
-            textSize = (width/t.length).toFloat()
-        }
+        gameOverPaint.textSize = (width/t.length).toFloat()
+        gameOverPaint.getTextBounds(t, 0, t.length, textRect)
 
-        gameOverPaint.getTextBounds(t, 0, t.length, r)
-
-        val x: Float = width / 2f - r.width() / 2f - r.left
-        val y: Float = height / 2f + r.height() / 2f - r.bottom
+        val x: Float = width / 2f - textRect.width() / 2f - textRect.left
+        val y: Float = height / 2f + textRect.height() / 2f - textRect.bottom
 
         if (gameOver) {
             canvas?.drawARGB(100, 0, 0, 0)
@@ -168,7 +167,6 @@ class SinglePlayerView(context: Context?) : View(context), SensorEventListener, 
             invalidate()
         }
 
-        //Log.i("info", width.toString() + " " + height.toString())
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {

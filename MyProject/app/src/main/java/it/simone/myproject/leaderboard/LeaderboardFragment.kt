@@ -45,6 +45,9 @@ class LeaderboardFragment : Fragment() {
 
                 view_leaderboard_list.layoutManager = LinearLayoutManager(context)
                 view_leaderboard_list.adapter = adapter
+
+                view_waiting_spinner2.visibility = View.GONE
+                view_leaderboard.visibility = View.VISIBLE
             }
         }
 

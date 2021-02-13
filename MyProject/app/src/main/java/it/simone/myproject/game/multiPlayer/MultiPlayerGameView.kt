@@ -150,7 +150,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_700))
+        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_500))
 
         textPaint.textSize = 0.05f * height
 

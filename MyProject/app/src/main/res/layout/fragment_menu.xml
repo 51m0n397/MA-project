@@ -6,58 +6,87 @@
     android:layout_height="match_parent"
     tools:context=".MenuFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent"
+        android:weightSum="8">
 
-        <Button
-            android:id="@+id/button_single_player"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/single_player"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center">
 
-        <Button
-            android:id="@+id/button_multi_player"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/multi_player"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_single_player" />
+            <TextView
+                android:id="@+id/view_title1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textAlignment="center"
+                android:textColor="?attr/colorPrimary"
+                android:textSize="@dimen/title_size"
+                android:textStyle="bold" />
+        </TableRow>
 
-        <Button
-            android:id="@+id/button_leaderboard"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/leaderboard"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_multi_player" />
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/button_logout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            android:text="@string/log_out"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_leaderboard" />
+            <Button
+                android:id="@+id/button_single_player"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/single_player"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/button_multi_player"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/multi_player"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/button_leaderboard"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/leaderboard"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:gravity="center_horizontal">
+
+            <Button
+                android:id="@+id/button_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:elegantTextHeight="true"
+                android:text="@string/log_out"
+                android:textSize="@dimen/button_size" />
+        </TableRow>
+    </TableLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

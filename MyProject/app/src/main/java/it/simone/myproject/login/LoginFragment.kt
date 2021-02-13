@@ -68,14 +68,6 @@ class LoginFragment : Fragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val account = GoogleSignIn.getLastSignedInAccount(this.requireActivity())
-
-        if (account != null) firebaseAuthWithGoogle(account)
-    }
-
     private fun signIn() {
         val signInIntent = googleSignInClient.signInIntent
         startActivityForResult(

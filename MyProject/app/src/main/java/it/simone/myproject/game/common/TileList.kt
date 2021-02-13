@@ -38,14 +38,14 @@ class TileList {
         }
     }
 
-    fun intersect(rect: RectF): String {
+    fun intersect(rect: RectF): Intersection? {
         val iter = list.iterator()
 
-        var res = ""
+        var res: Intersection? = null
 
         while (iter.hasNext()) {
             val isec = iter.next().intersect(rect)
-            if (isec!="") {
+            if (isec!=null) {
                 res = isec
                 break
             }

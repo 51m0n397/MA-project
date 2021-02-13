@@ -30,10 +30,10 @@ class Ball {
 
         val isec = tileList.intersect(boundingRect)
 
-        if (isec == "bottom") {
+        if (isec == Intersection.BOTTOM) {
             ySpeed = 0f
             boundingRect.offset(xSpeed * timePassed, -scrollSpeed * timePassed)
-        } else if ((isec == "left" && xSpeed < 0) || (isec == "right" && xSpeed > 0)) {
+        } else if ((isec == Intersection.LEFT && xSpeed < 0) || (isec == Intersection.RIGHT && xSpeed > 0)) {
             xSpeed = 0f
             boundingRect.offset(0f, ySpeed * timePassed)
         } else {

@@ -49,23 +49,23 @@ class Tile() {
         )
     }
 
-    fun intersect(rect: RectF): String {
+    fun intersect(rect: RectF): Intersection? {
         val intersection = RectF()
         if (intersection.setIntersect(rect1, rect)) {
             val bottom = rect1.intersects(rect.left, rect.bottom, rect.right, rect.bottom)
 
-            if (!bottom) return "left"
-            if (intersection.width()<intersection.height()) return "left"
-            return "bottom"
+            if (!bottom) return Intersection.LEFT
+            if (intersection.width()<intersection.height()) return Intersection.LEFT
+            return Intersection.BOTTOM
 
         } else if (intersection.setIntersect(rect2, rect)) {
             val bottom = rect2.intersects(rect.left, rect.bottom, rect.right, rect.bottom)
 
-            if (!bottom) return "right"
-            if (intersection.width()<intersection.height()) return "right"
-            return "bottom"
+            if (!bottom) return Intersection.RIGHT
+            if (intersection.width()<intersection.height()) return Intersection.RIGHT
+            return Intersection.BOTTOM
         }
-        return ""
+        return null
     }
 
 }
