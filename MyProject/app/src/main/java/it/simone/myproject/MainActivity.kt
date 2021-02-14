@@ -9,6 +9,7 @@ import androidx.navigation.findNavController
 class MainActivity : AppCompatActivity() {
     companion object {
         var prefs: SharedPreferences? = null
+        var context: Context? = null
         var backButton = BackButton.NORMAL
     }
 
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         prefs = this.getPreferences(Context.MODE_PRIVATE)
+        context = this.applicationContext
     }
 
     override fun onBackPressed() {

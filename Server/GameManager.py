@@ -8,6 +8,7 @@ import copy
 Error = enum('NOT_FOUND', 'NOT_WAITING', 'NOT_PLAYING', 'NOT_AUTHORIZED')
 GameState = enum('WAITING', 'PLAYING', 'OVER')
 PlayerState = enum('ALIVE', 'DEAD')
+BonusType = enum('FAST', 'BIG', 'FREEZE')
 
 games = {}
 threadLock = threading.Lock()
@@ -20,6 +21,7 @@ class Player:
         self.id = user['sub']
         self.score = 0
         self.state = PlayerState.ALIVE
+        self.bonus = None
 
     def dict(self):
         player = copy.deepcopy(self.__dict__)
@@ -105,7 +107,7 @@ def joinGame(game_id, player2):
     return game
 
 
-def updateGame(game_id, user, score, state):
+def updateGame(game_id, user, score, state, bonus):
     game = Error.NOT_FOUND
     threadLock.acquire()
     if game_id in games.keys():
@@ -116,6 +118,8 @@ def updateGame(game_id, user, score, state):
             player = game.player1
         elif user['sub'] == game.player2.id:
             player = game.player2
+
+        player.bonus = bonus
         
         if player == None:
             game = Error.NOT_AUTHORIZED

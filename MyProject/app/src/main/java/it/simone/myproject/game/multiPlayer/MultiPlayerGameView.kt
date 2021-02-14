@@ -6,14 +6,17 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import it.simone.myproject.BackButton
 import it.simone.myproject.MainActivity
 import it.simone.myproject.R
 import it.simone.myproject.game.common.Ball
+import it.simone.myproject.game.common.BonusList
 import it.simone.myproject.game.common.TileList
 import it.simone.myproject.gameserver.api.GameserverApi
+import it.simone.myproject.gameserver.model.BonusType
 import it.simone.myproject.gameserver.model.Game
 import it.simone.myproject.gameserver.model.GameState
 import it.simone.myproject.gameserver.model.PlayerState
@@ -26,6 +29,8 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
         var playerNum = 1
     }
 
+    private var bonusList: BonusList? = null
+
     private var gameLoop: Job? = null
     private var updateLoop: Job? = null
 
@@ -35,11 +40,17 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
     private var playerState = PlayerState.ALIVE
 
-    private var scrollSpeed = 0.001f
+    private var scrollSpeed = 0.0005f
     private var scrollAcceleration = 0.00000002f
+
+    private var activeBonus: BonusType? = null
 
     private val textPaint = Paint().apply {
         color = Color.WHITE
+    }
+
+    private val backgroundPaint = Paint().apply {
+        color = ContextCompat.getColor(MainActivity.context!!, R.color.purple_500)
     }
 
     private val framePaint = Paint().apply {
@@ -57,6 +68,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
     private var spinnerRotation = 0F
 
     private fun newGame() {
+        bonusList = BonusList()
         tileList = TileList()
         ball = Ball()
         xAcceleration = 0f
@@ -84,6 +96,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
     private fun update(timePassed: Long) {
         scrollSpeed += timePassed*scrollAcceleration
+        bonusList?.update(timePassed, scrollSpeed, ball!!)
         tileList?.update(timePassed, scrollSpeed)
         ball?.update(timePassed, tileList?.clone()!!, scrollSpeed, xAcceleration)
     }
@@ -95,13 +108,14 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
 
                 while (isActive) {
                     val now = System.currentTimeMillis()
-                    val timePassed = now - lastIterationTime
+                    var timePassed = now - lastIterationTime
                     lastIterationTime = now
+
+                    if (activeBonus == BonusType.FREEZE) timePassed = 0
 
                     update(timePassed)
 
                     if (ball?.gameOver == true) {
-                        //gameOver = true
                         playerState = PlayerState.DEAD
                         break
                     }
@@ -111,16 +125,46 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
             updateLoop = GlobalScope.launch {
                 while (isActive) {
                     val state = playerState
-                    val updatedGame = GameserverApi().updateGame(tileList!!.tileNum, state, game.id)
+
+                    if (state == PlayerState.DEAD) {
+                        val updatedGame = GameserverApi()
+                                .updateGame(tileList!!.tileNum, state, null, game.id)
+                        if (updatedGame != null) game = updatedGame
+                        break
+                    }
+                    val updatedGame = GameserverApi()
+                            .updateGame(tileList!!.tileNum, state, bonusList?.activeBonus, game.id)
                     if (updatedGame != null) {
                         game = updatedGame
+                        val bonus = if (playerNum == 1) game.player2.bonus else game.player1.bonus
+
+                        if (bonus != activeBonus) {
+                            // disable current bonus
+                            when (activeBonus) {
+                                BonusType.BIG -> {
+                                    ball?.small()
+                                }
+                                BonusType.FAST -> {
+                                    scrollSpeed /= 1.5f
+                                }
+                            }
+
+                            // activate new bonus
+                            activeBonus = bonus
+                            when(bonus) {
+                                BonusType.BIG -> {
+                                    ball?.big()
+                                }
+                                BonusType.FAST -> {
+                                    scrollSpeed *= 1.5f
+                                }
+                            }
+                        }
+
                     } else {
                         //error
                     }
 
-                    if (state == PlayerState.DEAD) {
-                        break
-                    }
                     delay(500L)
                 }
 
@@ -150,16 +194,7 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
 
-        canvas?.drawColor(ContextCompat.getColor(context, R.color.purple_500))
-
-        textPaint.textSize = 0.05f * height
-
-        canvas?.drawText(
-                resources.getString(R.string.score) + ": " + tileList!!.tileNum,
-                0.03f * width,
-                0.05f * height,
-                textPaint
-        )
+        canvas?.drawPaint(backgroundPaint)
 
         framePaint.strokeWidth = 0.01f * height
         val offset = 0.07f * height
@@ -191,8 +226,20 @@ class MultiPlayerGameView(context: Context?) : View(context), SensorEventListene
             canvas?.drawRect(frame, framePaint)
         }
 
+        bonusList?.clone()?.draw(frame, canvas)
         tileList?.clone()?.draw(frame, canvas)
         ball?.draw(frame, canvas)
+
+        canvas?.drawRect(0f, 0f, width.toFloat(), offset, backgroundPaint)
+
+        textPaint.textSize = 0.05f * height
+
+        canvas?.drawText(
+                resources.getString(R.string.score) + ": " + tileList!!.tileNum,
+                0.03f * width,
+                0.05f * height,
+                textPaint
+        )
 
 
         if (playerState == PlayerState.DEAD) {

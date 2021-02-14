@@ -1,9 +1,8 @@
 package it.simone.myproject.game.common
 
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.RectF
+import android.graphics.*
+import androidx.core.graphics.times
+import androidx.core.graphics.transform
 
 class Ball {
 
@@ -15,13 +14,25 @@ class Ball {
 
     var gameOver = false
 
-    private val boundingRect = RectF(1.5f-radius, 0f, 1.5f+radius, radius*2)
+    val boundingRect = RectF(1.5f - radius, 0f, 1.5f + radius, radius * 2)
 
     private var paint = Paint().apply {
         color = Color.WHITE
     }
     private var paintDebug = Paint().apply {
         color = Color.RED
+    }
+
+    fun big() {
+        val matrix = Matrix()
+        matrix.setScale(3/2f, 3/2f)
+        boundingRect.transform(matrix)
+    }
+
+    fun small() {
+        val matrix = Matrix()
+        matrix.setScale(2/3f, 2/3f)
+        boundingRect.transform(matrix)
     }
 
     fun update(timePassed: Long, tileList: TileList, scrollSpeed: Float, xAcceleration: Float) {
@@ -46,9 +57,9 @@ class Ball {
         }
         if (boundingRect.right > 3) {
             xSpeed = 0f
-            boundingRect.offset(3-boundingRect.right, 0f)
+            boundingRect.offset(3 - boundingRect.right, 0f)
         }
-        if (boundingRect.bottom > 5) boundingRect.offset(0f, 5-boundingRect.bottom)
+        if (boundingRect.bottom > 5) boundingRect.offset(0f, 5 - boundingRect.bottom)
         if (boundingRect.top < 0) gameOver = true
     }
 
@@ -61,9 +72,9 @@ class Ball {
                 paintDebug
         )*/
         canvas?.drawCircle(
-                frame.left + boundingRect.centerX()/3*frame.width(),
-                frame.top + boundingRect.centerY()/5*frame.height(),
-                boundingRect.width()/2/3*frame.width(),
+                frame.left + boundingRect.centerX() / 3 * frame.width(),
+                frame.top + boundingRect.centerY() / 5 * frame.height(),
+                boundingRect.width() / 2 / 3 * frame.width(),
                 paint
         )
     }

@@ -29,6 +29,7 @@ def auth_error(status):
 putParser = reqparse.RequestParser()
 putParser.add_argument('score', type=int, required=True)
 putParser.add_argument('state', type=int, required=True)
+putParser.add_argument('bonus', type=int, required=False)
 
 class GamesList(Resource):
     # Returns the list of pending games
@@ -69,7 +70,7 @@ class GameId(Resource):
     @auth.login_required
     def put(self, game_id):
         args = putParser.parse_args()
-        game = updateGame(game_id, auth.current_user(), args['score'], args['state'])
+        game = updateGame(game_id, auth.current_user(), args['score'], args['state'], args['bonus'])
         if game == Error.NOT_FOUND:
             return abort(404, message="game {} doesn't exist".format(game_id))
         if game == Error.NOT_PLAYING:

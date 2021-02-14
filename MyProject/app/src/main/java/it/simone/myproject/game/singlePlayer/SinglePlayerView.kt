@@ -25,7 +25,7 @@ class SinglePlayerView(context: Context?) : View(context), SensorEventListener, 
     private var xAcceleration = 0f
     private var gameOver = false
 
-    private var scrollSpeed = 0.001f
+    private var scrollSpeed = 0.0005f
     private var scrollAcceleration = 0.00000002f
 
     private val textPaint = Paint().apply {

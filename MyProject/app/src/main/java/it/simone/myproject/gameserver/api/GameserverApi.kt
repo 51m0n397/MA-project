@@ -3,6 +3,7 @@ package it.simone.myproject.gameserver.api
 import android.util.Log
 import com.haroldadmin.cnradapter.NetworkResponse
 import com.haroldadmin.cnradapter.NetworkResponseAdapterFactory
+import it.simone.myproject.gameserver.model.BonusType
 import it.simone.myproject.gameserver.authentication.AuthorizationInterceptor
 import it.simone.myproject.gameserver.authentication.TokenRefreshAuthenticator
 import it.simone.myproject.gameserver.model.Game
@@ -49,8 +50,8 @@ class GameserverApi {
         return null
     }
 
-    suspend fun updateGame(score: Int, state: PlayerState, gameId: String): Game? {
-        val response = service.updateGame(score, state.ordinal, gameId)
+    suspend fun updateGame(score: Int, state: PlayerState, bonus: BonusType?, gameId: String): Game? {
+        val response = service.updateGame(score, state.ordinal, bonus?.ordinal, gameId)
         if (response is NetworkResponse.Success) return response.body
         Log.i("info", "Error: " + response)
         return null

@@ -27,6 +27,7 @@ interface GameserverApiService {
     suspend fun updateGame(
             @Field("score") score: Int,
             @Field("state") state: Int,
+            @Field("bonus") bonus: Int?,
             @Path("game_id") gameId: String
     ): NetworkResponse<Game, ErrorResponse>
 }
